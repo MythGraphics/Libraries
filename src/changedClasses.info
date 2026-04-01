@@ -1,0 +1,9 @@
+net.AbstractProtocolChannel                 deleted (2.0.0)
+net.ServiceAddressContainer                 deleted (3.0.2)
+gui.*
+io.Reader                                   2.1.2
+io.Writer                                   2.2.2
+net.Login                                   1.2.0
+net.ftp.*
+database.mariadb.SQLConnection              1.0.4
+util.ColorLibrary                           1.8.1

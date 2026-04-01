@@ -1,0 +1,18 @@
+Describable ―┐
+    I│      U│       E           E
+Descriptor   ├― Tag ――― Element ――― AttributedElement
+             │   │E                         │
+            U│  SingleTag                   │U
+             │                              │
+             └― Attribut ―――――――――――――――――――┘
+
+Beispiel:
+Tag                 <x>
+SingleTag           <br />
+Element             <x>content</x>
+Attribut            param1=""
+AttributedElement   <x param1="" param2="">content</x>
+
+I implementiert (implements)
+E erweitert (extends)
+U benutzt (uses)
