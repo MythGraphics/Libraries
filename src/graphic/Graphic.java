@@ -2,7 +2,7 @@
  *
  */
 
-package graphics;
+package graphic;
 
 /**
  *
@@ -16,9 +16,9 @@ import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.RenderingHints;
 
-public class Graphics {
+public class Graphic {
 
-    private Graphics() {}
+    private Graphic() {}
 
     public static void setRenderingHints(Graphics2D g2d) {
         g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);

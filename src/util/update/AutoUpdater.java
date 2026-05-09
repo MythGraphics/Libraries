@@ -7,46 +7,31 @@ package util.update;
 /**
  *
  * @author  Martin Pröhl alias MythGraphics
- * @version 1.0.0
+ * @version 2.0.0
  *
  */
 
-import java.io.File;
 import java.io.IOException;
 
 public class AutoUpdater implements Runnable {
 
-    private final Update update;
+    private static String parameter = "";
 
-    private static String PARAMETER;
-    private static String UPDATEFILESTRING;
-    private static String TARGETPATH;
+    private final Updater updater;
+
+    private String jarName;
 
     public static void main(String[] args) {
-        if ( args[0] == null || args[0].isEmpty() ) {
-            System.out.println("no parameter - nothing to do.");
-            System.out.println();
+        if ( args == null || args.length < 3 || args[0].equalsIgnoreCase( "--help" )) {
             printHelp();
             return;
         }
-        int i = 0;
-        if ( args[i].startsWith("--") ) {
-            switch ( args[i].toLowerCase() ) {
-                case "--help":
-                    printHelp();
-                    return;
-                case "--install":
-                    TARGETPATH = args[++i];
-                    AutoUpdater.PARAMETER = args[i-1].toLowerCase();
-                    break;
-                default:
-                    AutoUpdater.PARAMETER = args[i].toLowerCase();
-            }
-            ++i;
-        }
-        if ( args.length >= i+1 ) {
-            // args[i] Programm/Jar-File(ohne Pfad); args[i+1] Version
-            new Thread( new AutoUpdater( args[i], args[i+1] )).start();
+
+        if ( args[0].startsWith( "--" )) {
+            parameter = args[0];
+            new Thread( new AutoUpdater( args[1], args[2], args[3] )).start();
+        } else {
+            new Thread( new AutoUpdater( args[0], args[1], args[2] )).start();
         }
     }
 
@@ -54,103 +39,76 @@ public class AutoUpdater implements Runnable {
         System.out.println("AutoUpdater für Java-Programme");
         System.out.println();
         System.out.println("Aufruf:");
-        System.out.println("[program] parameter jarfile version");
+        System.out.println("[program] parameter currentVersion onlineVersionURL updateURL");
         System.out.println();
         System.out.println("Parameter:");
         System.out.println("  --help            zeigt diese Hilfe an");
         System.out.println("  --nodownlaod      kein automatischer Download des Updates");
         System.out.println("  --noinstall       keine automatische Installation nach Download");
-        System.out.println("  --install [path]  automatische Installation und Start");
+        System.out.println("  --norestart       kein automatischer Neustart nach Installation");
+        System.out.println("  --update          (optional) automatische Installation und Start (default)");
         System.out.println();
     }
 
-    public AutoUpdater(String program, String version) {
-        this.update = new Update( program, version );
+    public AutoUpdater(String currentVersion, String versionUrl, String updateUrl) {
+        this.updater = new Updater( Integer.parseInt( currentVersion ), versionUrl, updateUrl );
     }
 
     @Override
     public void run() {
         System.out.println("Such nach Updates ...");
-        if ( !update.isAvailable() ) {
+        if ( !updater.isAvailable() ) {
             System.out.println("Kein Update verfügbar.");
             System.exit(0);
         }
         System.out.println("Update verfügbar.");
-        switch ( PARAMETER ) {
+        switch (parameter) {
             case "--nodownload":
-                System.exit(1);                                                                                         // ERRORLEVEL 1 --> Update vorhanden
+                System.out.println("Update vorhanden.");
+                System.exit(1);
+                return;
             case "--noinstall":
-                if ( download() ) {
-                    System.exit(2);                                                                                     // ERRORLEVEL 2 --> Update vorhanden + geladen
-                }
-                System.exit(255);                                                                                       // ERRORLEVEL 255 --> Fehler
+                download();
+                return;
+            case "--norestart":
+                install();
+                return;
         }
-        if ( !download() ) {
-            System.exit(255);
-        }
-        if ( !install(TARGETPATH) ) {
-            System.exit(255);
-        }
+
+        download();
+        install();
+        restart();
     }
 
-    public static String getJarExecutionDirectory() {
-        String jarFile, jarDirectory;
-        int cutFileSeperator, cutSemicolon;
-        jarFile = System.getProperty( "java.class.path" );
-
-        // Cut seperators
-        cutFileSeperator = jarFile.lastIndexOf( System.getProperty( "file.separator" ));
-        jarDirectory = jarFile.substring( 0, cutFileSeperator );
-
-        // Cut semicolons
-        cutSemicolon = jarDirectory.lastIndexOf(';');
-        jarDirectory = jarDirectory.substring( cutSemicolon+1, jarDirectory.length() );
-
-        return jarDirectory+System.getProperty("file.separator");
-    }
-
-    private boolean install(String targetpath) {
-        if (( targetpath == null ) || targetpath.isEmpty() ) {
-            targetpath = getJarExecutionDirectory();
-        }
-        targetpath += update.getProgram();
-        final String target = targetpath;
+    private void download() {
         try {
-            io.IO.copy( UPDATEFILESTRING, target );
-            System.out.println("Installation erfolgreich.");
-            new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        Runtime.getRuntime().exec( "java -jar " + target );
-                        System.out.println("Programm gestartet.");
-                    }
-                    catch (IOException e) {
-                        e.printStackTrace();
-                        System.out.println("\nProgramm konnte nicht gestartet werden.");
-                    }
-                }
-            }.start();
-            return true;
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("\nInstallation fehlgeschlagen.");
-            return false;
+            updater.download();
+            System.out.println("Update erfolgreich geladen.");
+            System.exit(2);
+        } catch (IOException e) {
+            System.err.println("Update konte nicht geladen werden.");
+            System.exit(255);
         }
     }
 
-    private boolean download() {
-        File updatepathfile = new File( "update" + File.pathSeparator );
-        updatepathfile.mkdir();
-        UPDATEFILESTRING = updatepathfile.getAbsolutePath() + File.pathSeparator + update.getProgram();
-        boolean success = update.download( UPDATEFILESTRING );
-        if ( success ) {
-            System.out.println("Update geladen.");
-        } else {
-            System.out.println("\nUpdate konnte nicht geladen werden.");
+    private void install() {
+        try {
+            jarName = updater.install();
+            System.out.println("Update erfolgreich installiert.");
+            System.exit(3);
+        } catch (IOException e) {
+            System.err.println("Update konte nicht installiert werden.");
+            System.exit(255);
         }
-        return success;
+    }
+
+    private void restart() {
+        try {
+            updater.restart(jarName);
+        } catch (IOException e) {
+            System.err.println("Neustart nicht möglich.");
+            System.exit(255);
+        }
     }
 
 }

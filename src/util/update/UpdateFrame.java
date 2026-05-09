@@ -7,45 +7,56 @@ package util.update;
 /**
  *
  * @author  Martin Pröhl alias MythGraphics
- * @version 1.0.4
+ * @version 2.0.0
  *
  */
 
+import static gui.JAdvTextField.MESSAGE;
+import static gui.JAdvTextField.SUCCESS;
+import java.awt.EventQueue;
+import static java.awt.image.ImageObserver.ERROR;
 import java.io.IOException;
+import javax.swing.JFrame;
 
-public class UpdateFrame extends javax.swing.JFrame {
+public class UpdateFrame extends JFrame {
 
-    private final Update update;
+    private final static String CURRENT_VERSION = "506";
+    private final static String UPDATE_SOURCE   = "https://github.com/MythGraphics/Inko5/blob/master/dist/MythGraphics_InkoProgramm_5.jar";
+    private final static String VERSION_SOURCE  = "https://raw.githubusercontent.com/MythGraphics/Inko5/master/src/version.txt";
+
+    private Updater updater;
 
     public static void main(String args[]) throws IOException {
         Runnable r;
-        if (args.length >= 2) {
-            r = () ->
-            {
-                try { new UpdateFrame( args[0], args[1] ).setVisible(true); }
-                catch (IOException e) { e.printStackTrace(); }
+        if (args != null && args.length >= 3) {
+            r = () -> {
+                new UpdateFrame(args[0], args[1], args[2]).setVisible(true);
             };
         } else {
-            r = () ->
-            {
-                try { new UpdateFrame(null).setVisible(true); }
-                catch (IOException e) { e.printStackTrace(); }
+            r = () -> {
+//              new UpdateFrame(null).setVisible(true);
+                new UpdateFrame(CURRENT_VERSION, VERSION_SOURCE, UPDATE_SOURCE).setVisible(true);
             };
         }
-        java.awt.EventQueue.invokeLater(r);
+        EventQueue.invokeLater(r);
     }
 
-    public UpdateFrame(String name, String version) throws IOException {
-        update = new Update( name, version );
+    public UpdateFrame(String currentVersion, String versionUrl, String updateUrl) {
+        updater = new Updater( Integer.parseInt( currentVersion ), versionUrl, updateUrl );
         initComponents();
+        initUI( currentVersion, versionUrl, updateUrl );
     }
 
-    public UpdateFrame(Update update) throws IOException {
-        this.update = update;
+    public UpdateFrame(Updater updater) {
+        this.updater = updater;
         initComponents();
-        if (update == null) {
-            jButton1.setEnabled(false);
-            jTextField1.show( "keine Daten", jTextField1.ERROR );
+        if (updater == null) {
+            this.updateURL.setEditable(true);
+            this.versionURL.setEditable(true);
+            this.currentVersion.setEditable(true);
+            jTextField1.show( "keine Daten", ERROR );
+        } else {
+            initUI( String.valueOf( updater.currentVersion ), updater.versionUri.toString(), updater.updateUri.toString() );
         }
     }
 
@@ -60,9 +71,15 @@ public class UpdateFrame extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jTextField1 = new gui.JAdvTextField();
+        jLabel1 = new javax.swing.JLabel();
+        versionURL = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        updateURL = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        currentVersion = new javax.swing.JTextField();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Update");
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Updater");
         setLocation(new java.awt.Point(0, 0));
         setName("UpdateFrame"); // NOI18N
         setResizable(false);
@@ -75,7 +92,7 @@ public class UpdateFrame extends javax.swing.JFrame {
             }
         });
 
-        jButton2.setText("Update herunterladen");
+        jButton2.setText("Update anwenden");
         jButton2.setEnabled(false);
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -84,62 +101,112 @@ public class UpdateFrame extends javax.swing.JFrame {
         });
 
         jTextField1.setEditable(false);
-        jTextField1.setHorizontalAlignment(0);
+        jTextField1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+
+        jLabel1.setText("Versions-URL:");
+
+        versionURL.setEditable(false);
+
+        jLabel2.setText("Update-URL:");
+
+        updateURL.setEditable(false);
+
+        jLabel3.setText("aktuelle Version:");
+
+        currentVersion.setEditable(false);
+        currentVersion.setText("0");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(10, 10, 10)
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(11, Short.MAX_VALUE))
+                    .addComponent(currentVersion, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 509, Short.MAX_VALUE)
+                    .addComponent(jTextField1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(versionURL)
+                    .addComponent(updateURL)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(10, 10, 10)
+                .addContainerGap()
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(currentVersion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(versionURL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(updateURL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, Short.MAX_VALUE)
                 .addComponent(jButton1)
-                .addGap(7, 7, 7)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton2)
-                .addGap(27, 27, 27)
+                .addGap(18, 18, 18)
                 .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+    private void initUI(String currentVersion, String versionUrl, String updateUrl) {
+        this.currentVersion.setText(currentVersion);
+        this.versionURL.setText(versionUrl);
+        this.updateURL.setText(updateUrl);
+    }
+
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        update.download();
-        jTextField1.show(
-            "Update erfolgreich heruntergeladen. ", jTextField1.SUCCESS
-        );
-        jButton2.setEnabled(false);
+        try {
+            updater.installRestart();
+            jTextField1.show( "Update erfolgreich. ", SUCCESS );
+        } catch (IOException e) {
+            catchException(e);
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        if ( update.isAvailable() ) {
-            jTextField1.show( "Update verfügbar !", jTextField1.SUCCESS );
+        if ( updater == null ) {
+            updater = new Updater( Integer.parseInt( currentVersion.getText() ), updateURL.getText(), versionURL.getText() );
+        }
+        if ( updater.isAvailable() ) {
+            jTextField1.show( "Update verfügbar.", SUCCESS );
             jButton2.setEnabled(true);
         } else {
-            jTextField1.show( "Kein Update verfügbar.", jTextField1.MESSAGE );
+            jTextField1.show( "Kein Update verfügbar.", MESSAGE );
             jButton2.setEnabled(false);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void throwException(Exception e) {
+    private void catchException(Exception e) {
         e.printStackTrace();
-        jTextField1.show( e.toString(), jTextField1.ERROR );
+        jTextField1.show( e.toString(), ERROR );
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField currentVersion;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private gui.JAdvTextField jTextField1;
+    private javax.swing.JTextField updateURL;
+    private javax.swing.JTextField versionURL;
     // End of variables declaration//GEN-END:variables
 }

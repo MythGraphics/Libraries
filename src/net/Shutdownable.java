@@ -7,12 +7,12 @@ package net;
 /**
  *
  * @author Martin Pröhl alias MythGraphics
- * @version 1.0.0
+ * @version 1.0.1
  *
  */
 
 public interface Shutdownable {
 
-    public void shutdown();
+    void shutdown();
 
 }

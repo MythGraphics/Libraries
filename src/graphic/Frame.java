@@ -2,7 +2,7 @@
  *
  */
 
-package graphics;
+package graphic;
 
 /**
  *
