@@ -26,6 +26,9 @@ public class ImageUtility {
     }
 
     public static BufferedImage scaleImage(BufferedImage image, int targetWidth, int targetHeight) {
+        if (image == null) {
+            return null;
+        }
 
         // Originale Breite und Höhe des Bildes
         int originalWidth = image.getWidth();
