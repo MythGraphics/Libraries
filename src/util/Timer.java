@@ -7,12 +7,12 @@ package util;
 /**
  *
  * @author  Martin Pröhl alias MythGraphics
- * @version 3.0.1
+ * @version 3.0.2
  *
  */
 
 import util.event.ActionListener;
-import util.event.AdvancedActionListener;
+import util.event.IntermediateActionListener;
 
 /**
  * milliSecond is main-unit
@@ -25,7 +25,7 @@ public class Timer extends Time implements Runnable {
 
     private final long initDelay;
     private final int interval = 100;
-    private final AdvancedActionListener listener;
+    private final IntermediateActionListener listener;
     private boolean repeat = false;
     private boolean interrupt = false;
     private Thread timer;
@@ -37,13 +37,12 @@ public class Timer extends Time implements Runnable {
      * @param listener the ActionListener to be executed after delay
      */
     public Timer(long delay, final ActionListener listener) {
-        this(
-            delay,
-            new AdvancedActionListener() {
+        this(delay,
+            new IntermediateActionListener() {
                 @Override
                 public void actionPerformed() { listener.actionPerformed(); }
                 @Override
-                public void intermediateAction() {}
+                public void intermediateActionPerformed() {}
             }
         );
     }
@@ -51,9 +50,9 @@ public class Timer extends Time implements Runnable {
     /**
      *
      * @param delay delay in milliSeconds
-     * @param listener the AdvancedActionListener to be executed after delay and every count/interval
+     * @param listener the IntermediateActionListener to be executed after delay and every count/interval
      */
-    public Timer(long delay, AdvancedActionListener listener) {
+    public Timer(long delay, IntermediateActionListener listener) {
         super(delay);
         this.initDelay = delay;
         this.listener = listener;
@@ -104,8 +103,8 @@ public class Timer extends Time implements Runnable {
             while (( delay = super.getInMilliseconds() ) > 0 ) {
                 try { Thread.sleep(interval); }
                 catch (InterruptedException e) {}
-                super.setTime( delay - interval );
-                listener.intermediateAction();
+                super.setTime(delay-interval);
+                listener.intermediateActionPerformed();
                 if (interrupt) { break; }
             }
             if (interrupt) {

@@ -7,7 +7,7 @@ package string;
 /**
  *
  * @author  Martin Pröhl alias MythGraphics
- * @version 1.0.0
+ * @version 1.0.1
  *
  */
 
@@ -19,7 +19,7 @@ public class MultiParser implements ParserInterface {
     private int counter = 0;
 
     public MultiParser() {
-        list = new ArrayList<>(100);
+        list = new ArrayList<>();
     }
 
     public void add(String s) {

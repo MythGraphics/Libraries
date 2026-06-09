@@ -2,7 +2,7 @@
  *
  */
 
-package tools;
+package tools.audio;
 
 /**
  *
@@ -18,43 +18,50 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-public class AudioPlayer implements Runnable {
+public class SimpleWavAudioPlayer implements Runnable {
 
     public final static int INFINITE_LOOP = Clip.LOOP_CONTINUOUSLY;
 
     private final static String AUDIOFILE = "sound.wav";
 
-    private final File file;
+    private final String file;
     private final int loops;
 
-    public AudioPlayer(File file) {
-        this( file, 0 );
+    public SimpleWavAudioPlayer(String file) {
+        this(file, 0);
     }
 
-    public AudioPlayer(File file, int loops) {
+    public SimpleWavAudioPlayer(String file, int loops) {
         this.file  = file;
         this.loops = loops;
     }
 
     @Override
     public void run() {
-        try {
-            Clip clip = AudioSystem.getClip();
-            clip.open( AudioSystem.getAudioInputStream( file ));
+        try ( Clip clip = AudioSystem.getClip() ) {
+            clip.open( AudioSystem.getAudioInputStream( new File( file )));
             clip.loop( loops );
             clip.start();
             do {
                 try { Thread.sleep(100); }
-                catch (InterruptedException e) {}
+                catch (InterruptedException ignore) {}
             }
             while ( clip.isRunning() );
+            clip.drain();
         }
-        catch (LineUnavailableException | UnsupportedAudioFileException | IOException e) { e.printStackTrace(); }
+        catch (LineUnavailableException | UnsupportedAudioFileException | IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void main(String args[]) {
         System.out.println( "Arbeitsverzeichnis: " + System.getProperty( "user.dir" ));
-        new Thread( new AudioPlayer( new File( AUDIOFILE ), 0 )).start();
+        String file = AUDIOFILE;
+        if ( args != null && args.length > 0 ) {
+            file = args[0];
+        }
+        System.out.println("Datei: " + file);
+        new Thread( new SimpleWavAudioPlayer( file, 0 )).start();
     }
 
 }

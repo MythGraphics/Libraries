@@ -7,7 +7,7 @@ package string;
 /**
  *
  * @author  Martin Pröhl alias MythGraphics
- * @version 3.1.0
+ * @version 3.1.1
  *
  */
 
@@ -41,27 +41,29 @@ public class Parser implements ParserInterface {
          *  int length = array.length;
          */
 
-        if ( !isParsable(source) ) {                                                                // EinzelDatei
-            part1   = source;
+        if ( !isParsable( source )) {
+            // EinzelDatei
+            part1 = source;
             return;
         }
 
         StringTokenizer t = new StringTokenizer( source, SEPARATORS, true );
         part1 = t.nextToken();
-        t.nextToken();                                                                              // '[' übergehen
+        t.nextToken(); // '[' übergehen
         StringTokenizer t2 = new StringTokenizer( t.nextToken(), "-:", false );
         first = Integer.parseInt( t2.nextToken() );
         last  = Integer.parseInt( t2.nextToken() );
-        if ( t2.hasMoreTokens() ) {                                                                 // initiallisiert "counts"
+        if ( t2.hasMoreTokens() ) {
+            // initiallisiert "counts"
             counts = Integer.parseInt( t2.nextToken() );
         } else {
             counts = 1;
         }
-        t.nextToken();                                                                              // ']' übergehen
+        t.nextToken(); // ']' übergehen
         while ( t.hasMoreTokens() ) {
             part2 += t.nextToken();
         }
-        pos = first;                                                                                // initiallisiert "pos"
+        pos = first; // initiallisiert "pos"
     }
 
     @Override
@@ -88,13 +90,13 @@ public class Parser implements ParserInterface {
     }
 
     public static boolean isParsable(String s) {
-        return ((( s.indexOf(SEPARATOR_OPEN) +1 ) * ( s.indexOf(SEPARATOR_CLOSE) +1 )) != 0 );      // also beide vorhanden, denn (-1+1)*(-1+1)=0
+        return ((( s.indexOf(SEPARATOR_OPEN) + 1 ) * ( s.indexOf(SEPARATOR_CLOSE) +1 )) != 0 ); // also beide vorhanden, denn (-1+1)*(-1+1)=0
     }
 
     @Override
     public String nextString() {
         String s = part1 + getNumber(pos, counts) + part2;
-        if ( s.endsWith( "0" )) {                                                                   // EinzelDatei --> "0" entfernen
+        if ( s.endsWith( "0" )) { // EinzelDatei --> "0" entfernen
             s = s.substring( 0, s.length()-1 );
         }
         ++pos;
@@ -113,7 +115,7 @@ public class Parser implements ParserInterface {
         if ( s.indexOf( Parser.SEPARATOR_OPEN ) != s.lastIndexOf( Parser.SEPARATOR_OPEN )) {
             while ( parser.hasMoreStrings() ) {
                 str = parser.nextString();
-                resolve( str, multi );                                                              // Rekursion
+                resolve(str, multi); // Rekursion
             }
         }
         if (( str != null ) && ( s.indexOf( Parser.SEPARATOR_OPEN ) == -1 )) {
@@ -133,7 +135,7 @@ public class Parser implements ParserInterface {
         if ( s.indexOf( Parser.SEPARATOR_OPEN ) != s.lastIndexOf( Parser.SEPARATOR_OPEN )) {
             while ( parser.hasMoreStrings() ) {
                 str = parser.nextString();
-                resolveTest( str );                                                                 // Rekursion
+                resolveTest(str); // Rekursion
             }
         }
         if (( str != null ) && ( s.indexOf( Parser.SEPARATOR_OPEN ) == -1 )) {

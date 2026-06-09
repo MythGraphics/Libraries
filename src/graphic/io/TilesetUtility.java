@@ -30,8 +30,8 @@ public class TilesetUtility {
      * @param start Startposition
      * @param space_x Abstand zwischen Sprites in x-Achse
      * @param space_y Abstand zwischen Sprites in y-Achse
-     * @param number Anzahl der zu ladenden Sprites oder -1 für alle
      * @param tileSize Größe des Sprite-Blocks (tileSize x tileSize Pixel)
+     * @param number Anzahl der zu ladenden Sprites oder -1 für alle
      * @return SpriteSet
      */
     public static BufferedImage[] getSpriteSet(
@@ -55,13 +55,16 @@ public class TilesetUtility {
      * @param image Quell-Bild
      * @param width Ausdehnung eines Sprites in x-Achse (Breite) oder 0 für anteilige Breite basierend auf der
      *              Gesamtbreite des Bildes
-     * @param number Anzahl der zu ladenden Sprites
      * @param tileSize Größe des Sprite-Blocks (tileSize x tileSize Pixel)
+     * @param number Anzahl der zu ladenden Sprites
      * @return SpriteSet
      */
     public static BufferedImage[] getSpriteSetHorizontal(BufferedImage image, int width, int tileSize, int number) {
-        if ( width <= 0 ) {
+        if (width <= 0 && number > 0) {
             width = image.getWidth() / number;
+        }
+        if (number <= 0 && width > 0) {
+            number = image.getWidth() / width;
         }
         return getSpriteSet( image, image.getHeight(), width, HORIZONTAL, tileSize, number );
     }
@@ -72,13 +75,16 @@ public class TilesetUtility {
      * @param image Quell-Bild
      * @param height Ausdehnung eines Sprites in y-Achse (Länge) oder 0 für anteilige Länge basierend auf der
      *               Gesamtlänge des Bildes
-     * @param number Anzahl der zu ladenden Sprites
      * @param tileSize Größe des Sprite-Blocks (tileSize x tileSize Pixel)
+     * @param number Anzahl der zu ladenden Sprites
      * @return SpriteSet
      */
     public static BufferedImage[] getSpriteSetVertical(BufferedImage image, int height, int tileSize, int number) {
-        if ( height <= 0 ) {
+        if (height <= 0 && number > 0) {
             height = image.getHeight() / number;
+        }
+        if (number <= 0 && height > 0) {
+            number = image.getHeight() / height;
         }
         return getSpriteSet( image, height, image.getWidth(), VERTICAL, tileSize, number );
     }
@@ -88,9 +94,9 @@ public class TilesetUtility {
      * @param image Quell-Bild
      * @param height Ausdehnung eines Sprites in y-Achse (Länge)
      * @param width Ausdehnung eines Sprites in x-Achse (Breite)
-     * @param number Anzahl der zu ladenden Sprites
      * @param alignment Ausrichtung des SpriteSets (horizontal oder vertical)
      * @param tileSize Größe des Sprite-Blocks (tileSize x tileSize Pixel)
+     * @param number Anzahl der zu ladenden Sprites
      * @return SpriteSet
      */
     public static BufferedImage[] getSpriteSet(
@@ -122,8 +128,8 @@ public class TilesetUtility {
      * @param start Startposition
      * @param space_x Abstand zwischen Sprites in x-Achse
      * @param space_y Abstand zwischen Sprites in y-Achse
-     * @param number Anzahl der zu ladenden Sprites pro Animation (Zeile) oder -1 für alle
      * @param tileSize Größe des Sprite-Blocks (tileSize x tileSize Pixel)
+     * @param number Anzahl der zu ladenden Sprites pro Animation (Zeile) oder -1 für alle
      * @return AnimationSet
      */
     public static Image[][] getAnimationSet(
