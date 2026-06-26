@@ -7,16 +7,11 @@ package io;
 /**
  *
  * @author Martin Pröhl alias MythGraphics
- * @version 1.1.0
+ * @version 1.1.1
  *
  */
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.PipedWriter;
-import java.io.BufferedReader;
-import java.io.PrintWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import progress.ProgressThread;
 import progress.Progressable;
@@ -82,7 +77,7 @@ public class TransmitterCore extends Notifier implements Progressable {
 
     public ArrayList<String> getList(BufferedReader in) throws IOException {
         super.reset();
-        ArrayList<String> list = new ArrayList<>(0xFF);                                                                 // 255 Einträge
+        ArrayList<String> list = new ArrayList<>();
         while ( in.ready() ) {
             list.add( in.readLine() );
         }

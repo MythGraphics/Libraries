@@ -7,16 +7,11 @@ package io;
 /**
  *
  * @author  Martin Pröhl alias MythGraphics
- * @version 1.0.1
+ * @version 1.0.2
  *
  */
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.PrintWriter;
-import java.io.Closeable;
-import java.io.IOException;
+import java.io.*;
 
 public class IOCore implements Closeable, IOable {
 

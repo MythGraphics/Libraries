@@ -3,15 +3,15 @@ IOBuilder bietet statische Methoden zum Anlegen von TextIO- und BinaryIO-Objekte
 Zur Datenübertragung dienen die Klassen Binary- und TextTransmitter.
 Transmitter implementiert sowohl Binary als auch Text.
 
-TextIOable ―┬― BinaryIOable
-    │I      │       │I
-  TextIO    │    BinaryIO ―┐
-    │       │              │
-    │U   IOable, Closeable │U
-    │       │I             │
-    ├―――― IOCore ―――――┬――――┘
-    │E                │E    I
-  FileIO          SocketIO ――― Closeable, net.SocketInterface
+       IOable, Closeable
+             │I
+  TextIO ――――┼――― BinaryIO
+    │        │         │
+    │U       │         │U
+    │        │         │
+    ├――――― IOCore ―――――┤
+    │E                 │E    I
+  FileIO           SocketIO ――― Closeable, net.SocketInterface
 
                   Notifyable
                       │I

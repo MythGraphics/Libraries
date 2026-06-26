@@ -1,10 +1,5 @@
 /*
- * IOThreadHandler.java
  *
- * Created on 21. Dezember 2009, 12:54
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package io;
@@ -25,7 +20,7 @@ public class IOThreadHandler implements Closeable {
     private final ExecutorService executor = Executors.newCachedThreadPool();
     private final Transmitter[] array;
 
-    private int lii = -1;                                                                           // last initiated index
+    private int lii = -1; // last initiated index
 
     public IOThreadHandler(Transmitter[] array) {
         this.array = array;
