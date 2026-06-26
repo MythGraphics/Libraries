@@ -7,7 +7,7 @@ package io;
 /**
  *
  * @author Martin Pröhl alias MythGraphics
- * @version 2.1.2
+ * @version 2.2.0
  *
  */
 
@@ -21,7 +21,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import javax.imageio.ImageIO;
 
-public final class Reader {
+public class Reader {
 
     private Reader() {}
 
@@ -63,6 +63,10 @@ public final class Reader {
 
     public static BufferedReader getTextReader(Socket source) throws IOException {
        return new BufferedReader( new InputStreamReader( source.getInputStream(), StandardCharsets.UTF_8 ));
+    }
+
+    public static BufferedReader getTextReader(String resource, Class clazz) {
+        return new BufferedReader( new InputStreamReader( clazz.getResourceAsStream( resource )));
     }
 
     public static BufferedReader getConsoleReader() {

@@ -1,10 +1,5 @@
 /*
- * SocketIO.java
  *
- * Created on 17. März 2009, 22:57
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package io;
@@ -12,7 +7,7 @@ package io;
 /**
  *
  * @author Martin Pröhl alias MythGraphics
- * @version 3.1.0
+ * @version 3.1.1
  *
  */
 
@@ -31,7 +26,7 @@ public class SocketIO extends IOCore implements Closeable, SocketInterface {
      * @throws IOException if an I/O-Error occurs
      */
     public SocketIO(Socket socket) throws IOException {
-        super( IOBuilder.getBinaryIOFromSocket(socket), IOBuilder.getTextIOFromSocket(socket) );
+        super( IOBuilder.getBinaryIO( socket ), IOBuilder.getTextIO( socket ));
         this.socket = socket;
     }
 

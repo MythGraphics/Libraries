@@ -7,7 +7,7 @@ package io;
 /**
  *
  * @author Martin Pröhl alias MythGraphics
- * @version 2.2.2
+ * @version 2.2.3
  *
  */
 
@@ -16,7 +16,7 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.zip.ZipOutputStream;
 
-public final class Writer {
+public class Writer {
 
     private Writer() {}
 

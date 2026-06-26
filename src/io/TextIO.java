@@ -7,7 +7,7 @@ package io;
 /**
  *
  * @author  Martin Pröhl alias MythGraphics
- * @version 1.0.1
+ * @version 1.0.2
  *
  */
 
@@ -16,7 +16,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-public class TextIO implements Closeable, TextIOable {
+public class TextIO implements Closeable {
 
     private final BufferedReader in;
     private final PrintWriter out;
@@ -26,12 +26,10 @@ public class TextIO implements Closeable, TextIOable {
         this.out = out;
     }
 
-    @Override
     public BufferedReader getTextReader() {
         return in;
     }
 
-    @Override
     public PrintWriter getTextWriter() {
         return out;
     }
