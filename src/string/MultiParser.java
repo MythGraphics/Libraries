@@ -7,13 +7,13 @@ package string;
 /**
  *
  * @author  Martin Pröhl alias MythGraphics
- * @version 1.0.1
+ * @version 1.0.2
  *
  */
 
 import java.util.ArrayList;
 
-public class MultiParser implements ParserInterface {
+public class MultiParser implements IsParser {
 
     private final ArrayList<String> list;
     private int counter = 0;
@@ -49,7 +49,7 @@ public class MultiParser implements ParserInterface {
     }
 
     public static MultiParser resolve(String s) {
-        return Parser.resolve( s );
+        return Parser.resolve(s);
     }
 
 }

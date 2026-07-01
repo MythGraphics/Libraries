@@ -7,7 +7,7 @@ package net;
 /**
  *
  * @author  Martin Pröhl alias MythGraphics
- * @version 1.2.0
+ * @version 1.2.1
  *
  */
 
@@ -20,18 +20,19 @@ public class Login {
     private char[] pass = new char[0];
 
     public Login(String user, String pass) {
-        this.user = user;
-        this.pass = pass.toCharArray();
+        this( user, pass.toCharArray() );
     }
 
     public Login(String user, char[] pass) {
         this.user = user;
-        this.pass = pass;
+        if (pass != null) {
+            this.pass = pass;
+        }
     }
 
     public Login(String url) throws MalformedURLException {
         if ( !url.contains(":") || !url.contains("@") ) {
-            throw new MalformedURLException("No \":\" nor \"@\" in URL-String");
+            throw new MalformedURLException("No \":\" or \"@\" in URL-String");
         }
         int start, end;
         if (( start = url.indexOf("://") ) >= 0 ) {

@@ -11,7 +11,7 @@ package string;
  *
  */
 
-public interface ParserInterface {
+public interface IsParser {
 
     boolean hasMoreStrings();
     String nextString();

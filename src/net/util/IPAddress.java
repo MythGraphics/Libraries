@@ -10,7 +10,7 @@ package net.util;
 /**
  *
  * @author Martin Pröhl alias MythGraphics
- * @version 2.0.1
+ * @version 2.0.2
  *
  */
 
@@ -33,25 +33,27 @@ public class IPAddress {
                 break;
             }
         }
-        for (int j = 0; j <= i; ++j)
-            if (network[j] != addr[j])
+        for (int j = 0; j <= i; ++j) {
+            if (network[j] != addr[j]) {
                 return false;
+            }
+        }
         return true;
     }
 
     public static int toInteger(String addr) {
-        int value = 0;
+        int value;
         StringTokenizer t = new StringTokenizer(addr, ".", false);
-        value = Integer.valueOf( Integer.parseInt( t.nextToken() )) << 24;
+        value  = Integer.valueOf( Integer.parseInt( t.nextToken() )) << 24;
         value |= Integer.valueOf( Integer.parseInt( t.nextToken() )) << 16;
         value |= Integer.valueOf( Integer.parseInt( t.nextToken() )) << 8;
-        value |= Integer.valueOf( Integer.parseInt( t.nextToken() ));
+        value |= Integer.parseInt( t.nextToken() );
         return value;
     }
 
     public static int toInteger(byte[] addr) {
-        int value = 0;
-        value = addr[0] << 24;
+        int value;
+        value  = addr[0] << 24;
         value |= addr[1] << 16;
         value |= addr[2] << 8;
         value |= addr[3];
@@ -65,8 +67,9 @@ public class IPAddress {
     public static int[] toIntegerArray(String addr) {
         int value[] = new int[4];
         StringTokenizer t = new StringTokenizer(addr, ".", false);
-        for (int i = 0; i < value.length; ++i)
+        for (int i = 0; i < value.length; ++i) {
             value[i] = Integer.parseInt( t.nextToken() );
+        }
         return value;
     }
 
@@ -96,10 +99,7 @@ public class IPAddress {
     public static boolean[] toBooleanArray(String binaddr) {
         boolean value[] = new boolean[32];
         for (int i = 0; i < value.length; ++i) {
-            if ( binaddr.charAt(i) == '1' )
-                value[i] = true;
-            else
-                value[i] = false;
+            value[i] = binaddr.charAt(i) == '1';
         }
         return value;
     }
@@ -120,8 +120,9 @@ public class IPAddress {
         }
         catch (IOException e) {e.printStackTrace();}
         try {
-            if (reader != null)
+            if (reader != null) {
                 reader.close();
+            }
         }
         catch (IOException e) {e.printStackTrace();}
         return s;
@@ -130,8 +131,9 @@ public class IPAddress {
     public static String getIPAddress(int index) throws UnknownHostException {
         InetAddress a[];
         a = InetAddress.getAllByName( InetAddress.getLocalHost().getHostName() );
-        if (index >= a.length)
-            throw new UnknownHostException("Index ung\u00fcltig");
+        if (index >= a.length) {
+            throw new UnknownHostException("Index ungültig");
+        }
         return a[index].getHostAddress();
     }
 

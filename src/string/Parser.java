@@ -7,7 +7,7 @@ package string;
 /**
  *
  * @author  Martin Pröhl alias MythGraphics
- * @version 3.1.1
+ * @version 3.1.2
  *
  */
 
@@ -18,7 +18,7 @@ import static util.NumberFormat.getNumber;
  * Single Parser<br />
  * löst exakt ein Klammerpaar ([…]) auf
  */
-public class Parser implements ParserInterface {
+public class Parser implements IsParser {
 
     public final static char SEPARATOR_OPEN  = '[';
     public final static char SEPARATOR_CLOSE = ']';

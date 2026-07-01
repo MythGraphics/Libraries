@@ -15,11 +15,20 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
 public class ImageUtility {
 
     private ImageUtility() {}
+
+    public static BufferedImage convertBytesToImage(byte[] imageBytes) throws IOException {
+        try ( ByteArrayInputStream in = new ByteArrayInputStream( imageBytes )) {
+            return ImageIO.read(in);
+        }
+    }
 
     public static Image scaleImage(Image image, int targetWidth, int targetHeight) {
         return image.getScaledInstance(targetWidth, targetHeight, Image.SCALE_REPLICATE);
