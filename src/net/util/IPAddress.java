@@ -1,7 +1,4 @@
 /*
- * IPAddress.java
- *
- * Created on 18. Mai 2006, 18:17
  *
  */
 
@@ -10,7 +7,7 @@ package net.util;
 /**
  *
  * @author Martin Pröhl alias MythGraphics
- * @version 2.0.2
+ * @version 2.0.3
  *
  */
 
@@ -115,16 +112,16 @@ public class IPAddress {
         String s = "";
         try {
             reader = io.Reader.getTextReader( new URL("http://checkip.dyndns.org/") );
-            tokenizer = new StringTokenizer( reader.readLine().substring(76), "<", false );
+            tokenizer = new StringTokenizer( reader.readLine().substring( 76 ), "<", false );
             s = tokenizer.nextToken();
         }
-        catch (IOException e) {e.printStackTrace();}
+        catch (IOException e) { e.printStackTrace(); }
         try {
             if (reader != null) {
                 reader.close();
             }
         }
-        catch (IOException e) {e.printStackTrace();}
+        catch (IOException e) { e.printStackTrace(); }
         return s;
     }
 

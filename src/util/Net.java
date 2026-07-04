@@ -7,7 +7,7 @@ package util;
 /**
  *
  * @author Martin Pröhl alias MythGraphics
- * @version 1.1.0
+ * @version 1.1.1
  *
  */
 
@@ -26,6 +26,10 @@ public class Net {
     }
 
     public static String getLocalIpAddress() {
+        return getLocalIpAddress(null);
+    }
+
+    public static String getLocalIpAddress(String pattern) {
         try {
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
             for (NetworkInterface netInterface : Collections.list(interfaces)) {
@@ -40,7 +44,14 @@ public class Net {
                     if ( addr instanceof Inet4Address && !addr.isLoopbackAddress() && !addr.isLinkLocalAddress() ) {
                         String hostAddress = addr.getHostAddress();
 
-                        // Filter gängiger Netze
+                        // filter pattern
+                        if ( pattern != null && pattern.length() > 0 ) {
+                            if ( hostAddress.startsWith( pattern )) {
+                                return hostAddress;
+                            }
+                        }
+
+                        // filter gängiger Netze
                         if ( hostAddress.startsWith( "192.168." ) ||
                              hostAddress.startsWith( "10." ) ||
                              hostAddress.startsWith( "172." )) {

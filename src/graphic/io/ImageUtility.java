@@ -7,7 +7,7 @@ package graphic.io;
 /**
  *
  * @author  Martin Pröhl alias MythGraphics
- * @version 1.0.0
+ * @version 1.0.1
  *
  */
 
@@ -25,6 +25,9 @@ public class ImageUtility {
     private ImageUtility() {}
 
     public static BufferedImage convertBytesToImage(byte[] imageBytes) throws IOException {
+        if (imageBytes == null || imageBytes.length == 0) {
+            return null;
+        }
         try ( ByteArrayInputStream in = new ByteArrayInputStream( imageBytes )) {
             return ImageIO.read(in);
         }
