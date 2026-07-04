@@ -20,7 +20,7 @@ public class Writer implements Closeable {
     private boolean isHeaderWritten = false;
 
     public Writer(File file) throws IOException {
-        out = io.Writer.getTextWriter(file);
+        out = io.WriterFactory.getTextWriter(file);
     }
 
     public void write(ArrayList<String> header, ArrayList<ArrayList<String>> dataset) {

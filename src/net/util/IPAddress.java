@@ -111,7 +111,7 @@ public class IPAddress {
         StringTokenizer tokenizer;
         String s = "";
         try {
-            reader = io.Reader.getTextReader( new URL("http://checkip.dyndns.org/") );
+            reader = io.ReaderFactory.getTextReader( new URL("http://checkip.dyndns.org/") );
             tokenizer = new StringTokenizer( reader.readLine().substring( 76 ), "<", false );
             s = tokenizer.nextToken();
         }

@@ -11,7 +11,7 @@ package graphic.io;
  *
  */
 
-import io.Reader;
+import io.ReaderFactory;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
 import java.awt.Transparency;
@@ -49,7 +49,7 @@ public class BinaryIO {
         for (String jar : jars) {
             if ( jar.contains( jarname )) {
                 try {
-                    return Reader.getImage( new ZipFile( jar ), imgpath );
+                    return ReaderFactory.getImage( new ZipFile( jar ), imgpath );
                 } catch (NullPointerException e) {
                     throw new IOException( imgpath + " konnte nicht aus JAR gelesen werden" );
                 }

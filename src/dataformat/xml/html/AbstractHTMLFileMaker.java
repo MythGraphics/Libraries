@@ -69,7 +69,7 @@ public abstract class AbstractHTMLFileMaker {
     private void readTemplate() throws IOException {
         String line;
         lines = new ArrayList<>();
-        BufferedReader in = io.Reader.getTextReader( getTemplateFile() );
+        BufferedReader in = io.ReaderFactory.getTextReader( getTemplateFile() );
         while ( in.ready() ) {
             line = in.readLine();
             if ( line.contains(marker) ) {
@@ -84,7 +84,7 @@ public abstract class AbstractHTMLFileMaker {
 
     private void makeHTMLFile() throws IOException {
         getTargetFile().createNewFile();
-        PrintWriter out = io.Writer.getTextWriter( getTargetFile() );
+        PrintWriter out = io.WriterFactory.getTextWriter( getTargetFile() );
         for (String s : lines) {
             out.println(s);
         }

@@ -31,11 +31,11 @@ public class SettingImporter implements Closeable {
     }
 
     public SettingImporter(File file) throws IOException {
-        this( io.Reader.getTextReader(file) );
+        this( io.ReaderFactory.getTextReader(file) );
     }
 
     public SettingImporter(URL url) throws IOException {
-        this( io.Reader.getTextReader(url) );
+        this( io.ReaderFactory.getTextReader(url) );
     }
 
     public SettingImporter(String filename) throws IOException {

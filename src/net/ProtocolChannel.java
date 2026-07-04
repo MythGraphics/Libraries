@@ -34,8 +34,8 @@ public abstract class ProtocolChannel extends Notifier implements Closeable, Pro
     public boolean connect() {
         try {
             address = getSocket().getInetAddress().getHostAddress();
-            in  = io.Reader.getTextReader( getSocket() );
-            out = io.Writer.getTextWriter( getSocket() );
+            in  = io.ReaderFactory.getTextReader( getSocket() );
+            out = io.WriterFactory.getTextWriter( getSocket() );
             System.out.println("Protocol connection established.");
             online = true;
             reader = new MessageReader(this);

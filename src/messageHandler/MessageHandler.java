@@ -17,8 +17,8 @@ package messageHandler;
  */
 
 import gui.JAdvTextField;
-import static io.Reader.getTextReader;
-import static io.Writer.getTextWriter;
+import static io.ReaderFactory.getTextReader;
+import static io.WriterFactory.getTextWriter;
 import java.io.*;
 import java.util.StringTokenizer;
 import javax.swing.JTextArea;

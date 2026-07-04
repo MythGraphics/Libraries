@@ -20,7 +20,7 @@ public final class IO {
 
     /**
      * Stream --> eine Folge von Bytes --> wenn Char-Encoding notwenig
-     * Writer --> eine Folge von Zeichen
+ WriterFactory --> eine Folge von Zeichen
      */
 
     public final static int BUFFERSIZE = 0x80000; // 512 kB
@@ -30,11 +30,11 @@ public final class IO {
 
     public static void copy(File source, File target) throws IOException {
         if ( !target.exists() ) { target.createNewFile(); }
-        Writer.write( new FileInputStream(source), new FileOutputStream(target) );
+        WriterFactory.write( new FileInputStream(source), new FileOutputStream(target) );
     }
 
     public static void copy(String sourceFile, String targetFile) throws IOException {
-        Writer.write( new FileInputStream(sourceFile), new FileOutputStream(targetFile) );
+        WriterFactory.write( new FileInputStream(sourceFile), new FileOutputStream(targetFile) );
     }
 
     /*
@@ -71,7 +71,7 @@ public final class IO {
         ZipOutputStream out = null;
         boolean state = false;
         try {
-            out = Writer.getZipWriter(zip);
+            out = WriterFactory.getZipWriter(zip);
             in  = new FileInputStream(source);
             out.putNextEntry( new ZipEntry( source.getName() ));
 
@@ -101,7 +101,7 @@ public final class IO {
         try {
             target.createNewFile();
             in = zip.getInputStream(source);
-            Writer.write( in, new FileOutputStream(target) );
+            WriterFactory.write( in, new FileOutputStream(target) );
             state = true;
         }
         catch (NullPointerException e) { state = false; }

@@ -21,7 +21,7 @@ public class Reader implements Closeable {
     private final BufferedReader in;
 
     public Reader(File file, Parser parser) throws IOException {
-        this.in = io.Reader.getTextReader(file);
+        this.in = io.ReaderFactory.getTextReader(file);
         this.parser = parser;
     }
 

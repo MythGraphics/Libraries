@@ -16,9 +16,9 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.zip.ZipOutputStream;
 
-public class Writer {
+public class WriterFactory {
 
-    private Writer() {}
+    private WriterFactory() {}
 
     public static BufferedOutputStream getBinaryWriter(OutputStream target) {
         return new BufferedOutputStream(target);

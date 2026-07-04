@@ -17,8 +17,8 @@ package net;
  */
 
 import io.Notifier;
-import io.Reader;
-import io.Writer;
+import io.ReaderFactory;
+import io.WriterFactory;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -55,16 +55,16 @@ public abstract class AbstractDataTransmitter extends Notifier implements Progre
     }
 
     public Thread uploadFile(File sourceFile) throws IOException {
-        BufferedInputStream  in  = Reader.getBinaryReader( sourceFile );
-        BufferedOutputStream out = Writer.getBinaryWriter( getContainer().getSocket() );
+        BufferedInputStream  in  = ReaderFactory.getBinaryReader( sourceFile );
+        BufferedOutputStream out = WriterFactory.getBinaryWriter( getContainer().getSocket() );
         return new Thread( getRunner(in, out) );
 //      transfere(in, out);
     }
 
     public Thread downloadFile(File targetFile) throws IOException {
         targetFile.createNewFile();
-        BufferedInputStream  in  = Reader.getBinaryReader( getContainer().getSocket() );
-        BufferedOutputStream out = Writer.getBinaryWriter( targetFile );
+        BufferedInputStream  in  = ReaderFactory.getBinaryReader( getContainer().getSocket() );
+        BufferedOutputStream out = WriterFactory.getBinaryWriter( targetFile );
         return new Thread( getRunner(in, out) );
 //      transfere(in, out);
     }
@@ -96,7 +96,7 @@ public abstract class AbstractDataTransmitter extends Notifier implements Progre
 
     public ArrayList<String> getFileList() throws IOException {
         super.reset();
-        BufferedReader in = io.Reader.getTextReader( getContainer().getSocket() );
+        BufferedReader in = io.ReaderFactory.getTextReader( getContainer().getSocket() );
         ArrayList<String> list = new ArrayList<>(ARRAYSIZE);
         sleep();
         while ( in.ready() ) {

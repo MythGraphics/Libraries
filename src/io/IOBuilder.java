@@ -23,11 +23,11 @@ public class IOBuilder {
     private IOBuilder() {}
 
     public static BinaryIO getBinaryIO(File file) throws IOException {
-        return new BinaryIO( Reader.getBinaryReader( file ),  Writer.getBinaryWriter( file ));
+        return new BinaryIO( ReaderFactory.getBinaryReader( file ),  WriterFactory.getBinaryWriter( file ));
     }
 
     public static TextIO getTextIO(File file) throws IOException {
-        return new TextIO( Reader.getTextReader( file ),  Writer.getTextWriter( file ));
+        return new TextIO( ReaderFactory.getTextReader( file ),  WriterFactory.getTextWriter( file ));
     }
 
     public static File getFile(String str) throws IOException {
@@ -35,11 +35,11 @@ public class IOBuilder {
     }
 
     public static BinaryIO getBinaryIO(Socket socket) throws IOException {
-        return new BinaryIO( Reader.getBinaryReader( socket ), Writer.getBinaryWriter( socket ));
+        return new BinaryIO( ReaderFactory.getBinaryReader( socket ), WriterFactory.getBinaryWriter( socket ));
     }
 
     public static TextIO getTextIO(Socket socket) throws IOException {
-        return new TextIO( Reader.getTextReader( socket ), Writer.getTextWriter( socket ));
+        return new TextIO( ReaderFactory.getTextReader( socket ), WriterFactory.getTextWriter( socket ));
     }
 
     public static Socket getSocket(int port) throws IOException {

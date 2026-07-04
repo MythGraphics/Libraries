@@ -21,9 +21,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import javax.imageio.ImageIO;
 
-public class Reader {
+public class ReaderFactory {
 
-    private Reader() {}
+    private ReaderFactory() {}
 
     public static BufferedInputStream getBinaryReader(InputStream source) {
         return new BufferedInputStream(source);
