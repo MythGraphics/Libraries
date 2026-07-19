@@ -7,7 +7,7 @@ package util;
 /**
  *
  * @author Martin Pröhl alias MythGraphics
- * @version 1.1.1
+ * @version 1.1.2
  *
  */
 
@@ -32,32 +32,11 @@ public class Net {
     public static String getLocalIpAddress(String pattern) {
         try {
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-            for (NetworkInterface netInterface : Collections.list(interfaces)) {
-                // Ignoriere inaktive Schnittstellen, Loopbacks und virtuelle Docker/VM-Adapter
-                if ( !netInterface.isUp() || netInterface.isLoopback() || netInterface.isVirtual() ) {
-                    continue;
-                }
-
-                Enumeration<InetAddress> addresses = netInterface.getInetAddresses();
-                for ( InetAddress addr : Collections.list( addresses )) {
-                    // nur eine echte IPv4-Adresse
-                    if ( addr instanceof Inet4Address && !addr.isLoopbackAddress() && !addr.isLinkLocalAddress() ) {
-                        String hostAddress = addr.getHostAddress();
-
-                        // filter pattern
-                        if ( pattern != null && pattern.length() > 0 ) {
-                            if ( hostAddress.startsWith( pattern )) {
-                                return hostAddress;
-                            }
-                        }
-
-                        // filter gängiger Netze
-                        if ( hostAddress.startsWith( "192.168." ) ||
-                             hostAddress.startsWith( "10." ) ||
-                             hostAddress.startsWith( "172." )) {
-                            return hostAddress;
-                        }
-                    }
+            String[] patternArray = { pattern, "192.168.", "10.", "172." };
+            for (String s : patternArray) {
+                String ip = filterHostAddress(interfaces, s);
+                if (ip != null) {
+                    return ip;
                 }
             }
         } catch (SocketException e) {
@@ -65,6 +44,32 @@ public class Net {
         }
         // Fallback, falls gar nichts gefunden wurde
         return "127.0.0.1";
+    }
+
+    public static String filterHostAddress(Enumeration<NetworkInterface> interfaces, String pattern) throws SocketException {
+        if (pattern == null || pattern.length() <= 0) {
+            return null;
+        }
+
+        for ( NetworkInterface netInterface : Collections.list( interfaces )) {
+            // Ignoriere inaktive Schnittstellen, Loopbacks und virtuelle Docker/VM-Adapter
+            if ( !netInterface.isUp() || netInterface.isLoopback() || netInterface.isVirtual() ) {
+                continue;
+            }
+
+            Enumeration<InetAddress> addresses = netInterface.getInetAddresses();
+            for ( InetAddress addr : Collections.list( addresses )) {
+                // nur eine echte IPv4-Adresse
+                if ( addr instanceof Inet4Address && !addr.isLoopbackAddress() && !addr.isLinkLocalAddress() ) {
+                    String hostAddress = addr.getHostAddress();
+                    // filtern
+                    if ( hostAddress.startsWith( pattern )) {
+                        return hostAddress;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
 }

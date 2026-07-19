@@ -7,7 +7,7 @@ package io;
 /**
  *
  * @author Martin Pröhl alias MythGraphics
- * @version 2.3.1
+ * @version 2.3.2
  *
  */
 
@@ -16,12 +16,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
-public final class IO {
-
-    /**
-     * Stream --> eine Folge von Bytes --> wenn Char-Encoding notwenig
- WriterFactory --> eine Folge von Zeichen
-     */
+public class IO {
 
     public final static int BUFFERSIZE = 0x80000; // 512 kB
     public final static int TIMEOUT    = 60*1000; // 60 sec
@@ -52,7 +47,7 @@ public final class IO {
         PrintWriter out = null;
         boolean state = false;
         try {
-            out = new PrintWriter( new FileWriter(target, append), true );                                              // autoflush
+            out = new PrintWriter( new FileWriter(target, append), true ); // autoflush
             out.println(line);
             state = true;
         }

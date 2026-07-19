@@ -1,5 +1,5 @@
 /*
- *
+ * Java8 compatible
  */
 
 package io;
@@ -7,13 +7,14 @@ package io;
 /**
  *
  * @author Martin Pröhl alias MythGraphics
- * @version 2.2.3
+ * @version 2.3.0
  *
  */
 
 import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.zip.ZipOutputStream;
 
 public class WriterFactory {
@@ -57,7 +58,7 @@ public class WriterFactory {
     }
 
     public static PrintWriter getTextWriter(File target) throws IOException {
-        return new PrintWriter( target, StandardCharsets.UTF_8 );
+        return new PrintWriter( Files.newBufferedWriter( target.toPath(), StandardCharsets.UTF_8 ));
     }
 
     public static PrintWriter getTextWriter(Socket target) throws IOException {

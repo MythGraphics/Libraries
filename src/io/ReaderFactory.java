@@ -1,5 +1,5 @@
 /*
- *
+ * Java8 compatible
  */
 
 package io;
@@ -7,7 +7,7 @@ package io;
 /**
  *
  * @author Martin Pröhl alias MythGraphics
- * @version 2.2.0
+ * @version 2.3.0
  *
  */
 
@@ -58,14 +58,14 @@ public class ReaderFactory {
     }
 
     public static BufferedReader getTextReader(File source) throws IOException {
-       return new BufferedReader( new FileReader( source, StandardCharsets.UTF_8 ));
+       return new BufferedReader( new InputStreamReader( new FileInputStream( source ), StandardCharsets.UTF_8 ));
     }
 
     public static BufferedReader getTextReader(Socket source) throws IOException {
        return new BufferedReader( new InputStreamReader( source.getInputStream(), StandardCharsets.UTF_8 ));
     }
 
-    public static BufferedReader getTextReader(String resource, Class clazz) {
+    public static BufferedReader getTextReader(String resource, Class<?> clazz) {
         return new BufferedReader( new InputStreamReader( clazz.getResourceAsStream( resource )));
     }
 
@@ -95,7 +95,6 @@ public class ReaderFactory {
         } finally {
             source.close();
         }
-        source.close();
         return list;
     }
 

@@ -7,7 +7,7 @@ package tools;
  *
  */
 
-public class Experiment2 {
+public class Experiment {
 
     public static void main(String[] args) {
         char start = 'A', end = 'Z';

@@ -23,6 +23,10 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class HbaSigner {
 
+    public final static String HBA_SIG_ALIAS = "HBA_Signatur_Alias";
+    public final static String HBA_ENC_ALIAS = "HBA_Enc_Alias";
+    public final static String HBA_DEC_ALIAS = "HBA_Decryption_Alias";
+
     public static void main(String[] args) {
         try {
             test();
@@ -31,7 +35,7 @@ public class HbaSigner {
         }
     }
 
-    public static void sign()
+    public static void sign(byte[] data)
         throws IOException, KeyStoreException, NoSuchAlgorithmException, CertificateException, UnrecoverableKeyException,
                InvalidKeyException, SignatureException {
         // PKCS#11 Provider initialisieren
@@ -44,11 +48,9 @@ public class HbaSigner {
         keyStore.load(null, null);
 
         // richtigen Alias für Signatur finden ("sign" oder "qes" im Namen)
-        String sigAlias = "Ihr_HBA_Signatur_Alias";
+        String sigAlias = HBA_SIG_ALIAS;
         PrivateKey privateKeySig = (PrivateKey) keyStore.getKey(sigAlias, null);
         PublicKey publicKeySig = keyStore.getCertificate(sigAlias).getPublicKey();
-
-        byte[] data = "Text- oder Binärdaten".getBytes("UTF-8");
 
         // signieren
         Signature signer = Signature.getInstance("SHA256withRSA", p);
@@ -65,7 +67,7 @@ public class HbaSigner {
         System.out.println("Signatur ist gültig: " + isValid);
     }
 
-    public static void encrypt(byte[] data, KeyStore keyStore, Provider p)
+    public static void encrypt(byte[] data, KeyStore keyStore, Provider provider)
         throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException,
                BadPaddingException, KeyStoreException {
         // symmetrischen AES-Schlüssel generieren
@@ -80,8 +82,8 @@ public class HbaSigner {
         byte[] iv = aesCipher.getIV(); // Der Initialisierungsvektor wird für GCM benötigt
 
         // AES-Schlüssel mit dem öffentlichen RSA-Key des HBAs verschlüsseln
-        PublicKey hbaPublicKeyEnc = keyStore.getCertificate("Ihr_HBA_Enc_Alias").getPublicKey();
-        Cipher rsaCipher = Cipher.getInstance("RSA/ECB/PKCS1Padding", p);
+        PublicKey hbaPublicKeyEnc = keyStore.getCertificate(HBA_ENC_ALIAS).getPublicKey();
+        Cipher rsaCipher = Cipher.getInstance("RSA/ECB/PKCS1Padding", provider);
         rsaCipher.init(Cipher.ENCRYPT_MODE, hbaPublicKeyEnc);
         byte[] encryptedAesKey = rsaCipher.doFinal( aesKey.getEncoded() );
 
@@ -91,16 +93,16 @@ public class HbaSigner {
         System.out.println("Initialisierungsvektor: " + Arrays.toString( iv ));
     }
 
-    public static void decrypt(byte[] encryptedData, byte[] encryptedAesKey, byte[] iv, KeyStore keyStore, Provider p)
+    public static void decrypt(byte[] encryptedData, byte[] encryptedAesKey, byte[] iv, KeyStore keyStore, Provider provider)
         throws InvalidKeyException, NoSuchAlgorithmException, KeyStoreException, BadPaddingException,
                IllegalBlockSizeException, UnrecoverableKeyException, InvalidAlgorithmParameterException,
                NoSuchPaddingException, UnsupportedEncodingException {
         // privaten Entschlüsselungs-Schlüssel vom HBA holen
-        String encAlias = "Ihr_HBA_Decryption_Alias"; // Oft mit "enc" oder "dec" im Namen
+        String encAlias = HBA_DEC_ALIAS; // Oft mit "enc" oder "dec" im Namen
         PrivateKey privateKeyEnc = (PrivateKey) keyStore.getKey(encAlias, null);
 
         // verschlüsselten AES-Schlüssel mit dem HBA entschlüsseln
-        Cipher rsaDecryptCipher = Cipher.getInstance("RSA/ECB/PKCS1Padding", p);
+        Cipher rsaDecryptCipher = Cipher.getInstance("RSA/ECB/PKCS1Padding", provider);
         rsaDecryptCipher.init(Cipher.DECRYPT_MODE, privateKeyEnc);
         byte[] decryptedAesKeyBytes = rsaDecryptCipher.doFinal(encryptedAesKey);
 
@@ -122,14 +124,14 @@ public class HbaSigner {
         InvalidKeyException, SignatureException {
         // PKCS#11 Provider dynamisch konfigurieren und laden
         String configPath = "pkcs11.cfg"; // Pfad zu Ihrer CFG-Datei
-        Provider p = Security.getProvider("SunPKCS11");
-        p = p.configure(configPath);
-        Security.addProvider(p);
+        Provider provider = Security.getProvider("SunPKCS11");
+        provider = provider.configure(configPath);
+        Security.addProvider(provider);
 
         /* KeyStore der Smartcard (HBA) öffnen
          * Wenn null als Passwort übergeben, triggert das System (bzw. der Treiber)
          * in der Regel den PIN-Dialog auf dem Reiner SCT Display. */
-        KeyStore keyStore = KeyStore.getInstance("PKCS11", p);
+        KeyStore keyStore = KeyStore.getInstance("PKCS11", provider);
         System.out.println("Bitte PIN am Kartenleser eingeben ...");
         keyStore.load(null, null);
 
@@ -155,7 +157,7 @@ public class HbaSigner {
         // Daten signieren (Beispiel mit SHA256 mit RSA)
         byte[] dataToSign = "Zu signierende medizinische Daten".getBytes("UTF-8");
 
-        Signature signature = Signature.getInstance("SHA256withRSA", p);
+        Signature signature = Signature.getInstance("SHA256withRSA", provider);
         signature.initSign(privateKey);
         signature.update(dataToSign);
 

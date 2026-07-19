@@ -1,7 +1,7 @@
 package tools;
 
-import java.net.Socket;
 import java.io.*;
+import java.net.Socket;
 
 public class InputReader {
 
@@ -45,9 +45,15 @@ public class InputReader {
 
     private static void close() throws IOException {
         System.out.println( "gebe Ressourcen frei ..." );
-        if ( in  != null ) in.close();
-        if ( out != null ) out.close();
-        if ( s   != null ) s.close();
+        if ( in  != null ) {
+            in.close();
+        }
+        if ( out != null ) {
+            out.close();
+        }
+        if ( s   != null ) {
+            s.close();
+        }
     }
 
     private InputReader() {}
