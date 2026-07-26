@@ -21,11 +21,13 @@ import javax.crypto.*;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-public class HbaSigner {
+public class Hba {
 
     public final static String HBA_SIG_ALIAS = "HBA_Signatur_Alias";
     public final static String HBA_ENC_ALIAS = "HBA_Enc_Alias";
     public final static String HBA_DEC_ALIAS = "HBA_Decryption_Alias";
+
+    private final static String CONFIG_PATH  = "src\\security\\pkcs11.cfg";
 
     public static void main(String[] args) {
         try {
@@ -35,16 +37,46 @@ public class HbaSigner {
         }
     }
 
+    public static void test() throws IOException, NoSuchAlgorithmException, KeyStoreException, CertificateException {
+        // PKCS#11 Provider initialisieren
+        Provider provider = Security.getProvider("SunPKCS11");
+        provider = provider.configure(CONFIG_PATH);
+        Security.addProvider(provider);
+
+        /* KeyStore der Smartcard (HBA) öffnen
+         * Wenn null als Passwort übergeben, triggert das System (bzw. der Treiber)
+         * in der Regel den PIN-Dialog auf dem Reiner SCT Display. */
+        KeyStore keyStore = KeyStore.getInstance("PKCS11", provider);
+        System.out.println("Bitte PIN am Kartenleser eingeben ...");
+        keyStore.load(null, null);
+
+        // Den passenden Alias (Schlüssel) für die Signatur finden
+        Enumeration<String> aliases = keyStore.aliases();
+        String alias = null;
+        while ( aliases.hasMoreElements() ) {
+            String currentAlias = aliases.nextElement();
+            // HBAs haben oft mehrere Aliase (z.B. für Verschlüsselung vs. Signatur/QES)
+            System.out.println("Gefundener Alias: " + currentAlias); // debug
+            if ( currentAlias.toLowerCase().contains( "sign" )) {
+                alias = currentAlias;
+            }
+        }
+        if (alias == null) {
+            throw new CertificateException("Kein passender Signaturschlüssel gefunden.");
+        }
+
+        System.out.println("Test erfolgreich.");
+    }
+
     public static void sign(byte[] data)
         throws IOException, KeyStoreException, NoSuchAlgorithmException, CertificateException, UnrecoverableKeyException,
                InvalidKeyException, SignatureException {
         // PKCS#11 Provider initialisieren
-        String configPath = "pkcs11.cfg";
-        Provider p = Security.getProvider("SunPKCS11").configure(configPath);
-        Security.addProvider(p);
+        Provider provider = Security.getProvider("SunPKCS11").configure(CONFIG_PATH);
+        Security.addProvider(provider);
 
         // KeyStore laden (PIN-Eingabe erfolgt am Terminal)
-        KeyStore keyStore = KeyStore.getInstance("PKCS11", p);
+        KeyStore keyStore = KeyStore.getInstance("PKCS11", provider);
         keyStore.load(null, null);
 
         // richtigen Alias für Signatur finden ("sign" oder "qes" im Namen)
@@ -53,13 +85,14 @@ public class HbaSigner {
         PublicKey publicKeySig = keyStore.getCertificate(sigAlias).getPublicKey();
 
         // signieren
-        Signature signer = Signature.getInstance("SHA256withRSA", p);
+        Signature signer = Signature.getInstance("SHA256withRSA", provider);
         signer.initSign(privateKeySig);
         signer.update(data);
         byte[] signatureBytes = signer.sign(); // Das ist die lose Signatur (Detached Signature)
+        System.out.println("Signatur erfolgreich erstellt: Länge: " + signatureBytes.length + " Bytes."); // debug
 
         // verifizieren
-        Signature verifier = Signature.getInstance("SHA256withRSA", p);
+        Signature verifier = Signature.getInstance("SHA256withRSA", provider);
         verifier.initVerify(publicKeySig);
         verifier.update(data);
         boolean isValid = verifier.verify(signatureBytes);
@@ -79,7 +112,7 @@ public class HbaSigner {
         Cipher aesCipher = Cipher.getInstance("AES/GCM/NoPadding"); // Sicherer GCM-Modus
         aesCipher.init(Cipher.ENCRYPT_MODE, aesKey);
         byte[] encryptedData = aesCipher.doFinal(data);
-        byte[] iv = aesCipher.getIV(); // Der Initialisierungsvektor wird für GCM benötigt
+        byte[] iv = aesCipher.getIV(); // Initialisierungsvektor wird für GCM benötigt
 
         // AES-Schlüssel mit dem öffentlichen RSA-Key des HBAs verschlüsseln
         PublicKey hbaPublicKeyEnc = keyStore.getCertificate(HBA_ENC_ALIAS).getPublicKey();
@@ -116,54 +149,8 @@ public class HbaSigner {
 
         byte[] decryptedData = aesDecryptCipher.doFinal(encryptedData);
 
-        System.out.println("Entschlüsselte Daten: " + new String(decryptedData, "UTF-8"));
-    }
-
-    public static void test() throws
-        KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException, UnrecoverableKeyException,
-        InvalidKeyException, SignatureException {
-        // PKCS#11 Provider dynamisch konfigurieren und laden
-        String configPath = "pkcs11.cfg"; // Pfad zu Ihrer CFG-Datei
-        Provider provider = Security.getProvider("SunPKCS11");
-        provider = provider.configure(configPath);
-        Security.addProvider(provider);
-
-        /* KeyStore der Smartcard (HBA) öffnen
-         * Wenn null als Passwort übergeben, triggert das System (bzw. der Treiber)
-         * in der Regel den PIN-Dialog auf dem Reiner SCT Display. */
-        KeyStore keyStore = KeyStore.getInstance("PKCS11", provider);
-        System.out.println("Bitte PIN am Kartenleser eingeben ...");
-        keyStore.load(null, null);
-
-        // Den passenden Alias (Schlüssel) für die Signatur finden
-        Enumeration<String> aliases = keyStore.aliases();
-        String alias = null;
-        while ( aliases.hasMoreElements() ) {
-            String currentAlias = aliases.nextElement();
-            // HBAs haben oft mehrere Aliase (z.B. für Verschlüsselung vs. Signatur/QES)
-            System.out.println("Gefundener Alias: " + currentAlias);
-            if ( currentAlias.toLowerCase().contains( "sign" )) {
-                alias = currentAlias;
-            }
-        }
-
-        if (alias == null) {
-            throw new SignatureException("Kein passender Signaturschlüssel gefunden.");
-        }
-
-        // Privaten Schlüssel und Zertifikat holen
-        PrivateKey privateKey = (PrivateKey) keyStore.getKey(alias, null);
-
-        // Daten signieren (Beispiel mit SHA256 mit RSA)
-        byte[] dataToSign = "Zu signierende medizinische Daten".getBytes("UTF-8");
-
-        Signature signature = Signature.getInstance("SHA256withRSA", provider);
-        signature.initSign(privateKey);
-        signature.update(dataToSign);
-
-        byte[] digitalSignature = signature.sign();
-
-        System.out.println("Signatur erfolgreich erstellt: Länge: " + digitalSignature.length + " Bytes.");
+        System.out.println("Entschlüsselte Daten:");
+        System.out.println( new String( decryptedData, "UTF-8" ));
     }
 
 }
