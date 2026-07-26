@@ -20,7 +20,7 @@ public class Fibonacci {
         if (n <= 2) {
             return 1;
         }
-        return ( fiboR(n-1) + fiboR(n-2) );
+        return ( fiboR( n-1 ) + fiboR( n-2 ));
     }
 
     /**
@@ -34,8 +34,7 @@ public class Fibonacci {
             x = a+b;
             a = b;
             b = x;
-//          System.out.println(a);  /* Ausgabe aller Fibonacci-Zahlen
-//                                     einschließlich fibo(n) */
+//          System.out.println(a);  // Ausgabe aller Fibonacci-Zahlen einschließlich fibo(n)
         }
         return a;
     }

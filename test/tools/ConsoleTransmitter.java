@@ -3,22 +3,24 @@ package tools;
 import java.io.*;
 import java.net.Socket;
 
-public class InputReader {
+public class ConsoleTransmitter {
 
     private static BufferedReader in;
     private static PrintWriter out;
     private static Socket s;
 
+    private ConsoleTransmitter() {}
+
     public static void main(String[] args) {
         try {
             in  = new BufferedReader( new InputStreamReader( System.in ));
             System.out.println( "lese von stdin ...\n" );
-            String str;
-            while ( !( str = in.readLine() ).contains("quit") ) {
+            String str = in.readLine();
+            while ( !str.startsWith( "quit" )) {
                 System.out.println( "--> " + str );
                 if ( str.startsWith("send ") ) {
                     connect();
-                    out.println( str = str.substring(5) );
+                    out.println( str = str.substring( 5 ));
                     out.flush();
                     System.out.println( "\"" + str + "\" gesendet" );
                 }
@@ -55,7 +57,5 @@ public class InputReader {
             s.close();
         }
     }
-
-    private InputReader() {}
 
 }
