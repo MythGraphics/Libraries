@@ -22,8 +22,8 @@ public class ColorableJTable extends JTable {
 
     public ColorableJTable() {
         super();
-        colorArray = new Color[super.getRowCount()][super.getColumnCount()];
-        super.setDefaultRenderer(Object.class, new ColoringCellRenderer());
+        colorArray = new Color[ super.getRowCount() ][ super.getColumnCount() ];
+        super.setDefaultRenderer( Object.class, new ColoringCellRenderer() );
     }
 
     public void setColorArray(Color[][] colorArray) {
@@ -39,8 +39,11 @@ public class ColorableJTable extends JTable {
     }
 
     class ColoringCellRenderer extends DefaultTableCellRenderer {
+
         @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                                                       boolean isSelected, boolean hasFocus,
+                                                       int row, int col) {
             super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
             if ( colorArray[row][col] != null ) {
                 super.setBackground( getColor( colorArray[row][col], row ));
@@ -49,12 +52,14 @@ public class ColorableJTable extends JTable {
             }
             return this;
         }
+
         private Color getDefaultColor(int row) {
             if ( row%2 == 0 ) {
                 return Color.WHITE;
             }
             return util.ColorLibrary.LIGHT_GRAY;
         }
+
         private Color getColor(Color color, int row) {
             if ( row%2 == 0 ) {
                 return color.brighter();
@@ -62,5 +67,4 @@ public class ColorableJTable extends JTable {
             return color;
         }
     }
-
 }

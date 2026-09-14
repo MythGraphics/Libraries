@@ -7,7 +7,7 @@ package graphic;
 /**
  *
  * @author  Martin Pröhl alias MythGraphics
- * @version 1.0.0
+ * @version 1.0.1
  *
  */
 
@@ -18,7 +18,7 @@ public class Frame extends javax.swing.JFrame {
 
     public Frame() {
         initComponents();
-        initComponents2();
+        initPanel();
     }
 
     /** This method is called from within the constructor to
@@ -108,7 +108,7 @@ public class Frame extends javax.swing.JFrame {
 
     private void formKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyTyped
         switch ( evt.getKeyChar() ) {
-            // ToDo hier weiter
+            // ToDo Tastatureingaben verarbeiten
         }
         repaint();
     }//GEN-LAST:event_formKeyTyped
@@ -125,7 +125,7 @@ public class Frame extends javax.swing.JFrame {
         });
     }
 
-    private void initComponents2() {
+    private void initPanel() {
         winw = super.getSize().width;
         winh = super.getSize().height;
         panel = new ContentPanel(winw, winh);
